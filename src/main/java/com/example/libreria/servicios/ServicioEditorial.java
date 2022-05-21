@@ -41,6 +41,17 @@ public class ServicioEditorial {
     }
     
     @Transactional(readOnly = true)
+    public EntidadEditorial buscarPorNombre(String nombre) throws ErroresDeServicio {
+        EntidadEditorial busquedaNombre = repositorioEditorial.buscarPorNombre(nombre);
+        
+        if (busquedaNombre != null) {
+            return busquedaNombre;
+        } else {
+            throw new ErroresDeServicio("La editorial que desea buscar no existe.");
+        }
+    }
+    
+    @Transactional(readOnly = true)
     public List<EntidadEditorial> mostrarTodos() {
         return repositorioEditorial.findAll();
     }
@@ -64,12 +75,14 @@ public class ServicioEditorial {
     }
     
     @Transactional(propagation = Propagation.NESTED)
-    public void borrarPorNombre(String nombre) {
-        Optional <EntidadEditorial> optional = repositorioEditorial.findById(nombre);
-        
-        if (optional.isPresent()) {
-            repositorioEditorial.delete(optional.get());
+    public void borrarPorNombre(String nombre) throws ErroresDeServicio {
+        EntidadEditorial borrarNombre = repositorioEditorial.buscarPorNombre(nombre);
+        if (borrarNombre != null) {
+            repositorioEditorial.delete(borrarNombre);
+        } else {
+            throw new ErroresDeServicio("La editorial que desea borrar no existe.");
         }
+        
     }
     
     @Transactional(propagation = Propagation.NESTED)
